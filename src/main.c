@@ -15,6 +15,12 @@ void init_bus(Bus *bus) {
     bus->ram_size = RAM_SIZE;
 }
 
+void print_regs(CPU *cpu) {
+    for (int i = 0; i < 32; i++) {
+        printf("r%d = 0x%X\n", i, cpu->x[i]);
+    }
+}
+
 int main(int argc, char *argv[]) {
     CPU cpu;
     init_cpu(&cpu);
@@ -23,6 +29,18 @@ int main(int argc, char *argv[]) {
     Bus bus;
     init_bus(&bus);
     printf("Bus initialized\n");
+
+    if (load_program(&bus, "data/loadstore.bin")) {
+        printf("erreur de chargement du programme\n");
+    } else {
+        printf("programme chargé avec succès\n");
+    }
+
+    do {
+        step(&bus, &cpu);
+    } while (cpu.pc != HALT_ADDR);
+
+    print_regs(&cpu);
 
     return EXIT_SUCCESS;
 }
